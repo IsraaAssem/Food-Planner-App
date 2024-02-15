@@ -63,6 +63,7 @@ public class FavMealAdapter  extends RecyclerView.Adapter<FavMealAdapter.MealVie
 
     @Override
     public int getItemCount() {
+        Log.i("TAG", "getItemCount: "+meals.size());
         return meals.size();
     }
 

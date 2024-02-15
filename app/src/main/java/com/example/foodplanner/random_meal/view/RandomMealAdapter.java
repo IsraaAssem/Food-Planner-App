@@ -45,6 +45,7 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Me
     public void onBindViewHolder(@NonNull RandomMealAdapter.MealViewHolder holder, int position) {
 
             Meal currentMeal=meals.get(position);
+        Log.i(TAG, "onBindViewHolder: "+position);
             holder.mealName.setText(currentMeal.getMealName());
 
             Glide.with(context).load(meals.get(position).getMealImage())

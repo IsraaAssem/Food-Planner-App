@@ -11,6 +11,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
+
     private static final String BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
     private static final String TAG = "MealClient";
     private MealService mealService;

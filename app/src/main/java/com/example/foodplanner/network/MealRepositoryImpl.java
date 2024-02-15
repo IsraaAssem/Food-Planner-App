@@ -1,5 +1,7 @@
 package com.example.foodplanner.network;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 
 import com.example.foodplanner.model.Meal;
@@ -35,6 +37,7 @@ public class MealRepositoryImpl implements MealRepository{
     @Override
     public void insertMeal(Meal meal) {
         mealsLocalDataSource.insertMeal(meal);
+        Log.i("TAG", "insert Meal: ");
     }
 
     @Override
