@@ -1,0 +1,73 @@
+//pluginManagement {
+//    repositories {
+//        google()
+//        mavenCentral()
+//        gradlePluginPortal()
+//        maven { url 'https://jitpack.io' }////
+//
+//    }
+//}
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url "https://git.foo.mobi/api/v4/groups/386/-/packages/maven"
+            credentials(HttpHeaderCredentials) {
+                name = 'Deploy-Token'
+                value = 'DMyp9FN_5LBtdLhEsh5o'
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+        maven {
+            url "http://maven.foo.mobi:8081/nexus/content/repositories/foo/"
+            allowInsecureProtocol = true
+            credentials {
+                username "fooandroid"
+                password "foomaven2016"
+            }
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url "https://git.foo.mobi/api/v4/groups/386/-/packages/maven"
+            credentials(HttpHeaderCredentials) {
+                name = 'Deploy-Token'
+                value = 'DMyp9FN_5LBtdLhEsh5o'
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+//
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }////
+    }
+}
+
+rootProject.name = "Food Planner"
+include ':app'
