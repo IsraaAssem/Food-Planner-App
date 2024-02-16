@@ -1,12 +1,9 @@
 package com.example.foodplanner.network;
-
 import com.example.foodplanner.model.Meals;
-
-import retrofit2.Call;
+import io.reactivex.rxjava3.core.Observable;
 import retrofit2.http.GET;
 
 public interface MealService {
-
         @GET("random.php")
-        Call<Meals> getMeals();
+        Observable<Meals> getMeals();
 }

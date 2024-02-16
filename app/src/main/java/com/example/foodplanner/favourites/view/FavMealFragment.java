@@ -27,6 +27,11 @@ import com.example.foodplanner.network.MealRepositoryImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class FavMealFragment extends Fragment  implements OnFavouriteClickListener, FavView  {
 
     RecyclerView favRv;
@@ -67,14 +72,20 @@ public class FavMealFragment extends Fragment  implements OnFavouriteClickListen
     }
 
     @Override
-    public void showData(LiveData<List<Meal>> meals) {
-        meals.observe(this, new Observer<List<Meal>>() {
-            @Override
-            public void onChanged(List<Meal> products) {
-                favMealAdapter.setMeals(products);
-                favMealAdapter.notifyDataSetChanged();
-            }
-        });
+    public void showData(Flowable<List<Meal>> meals) {
+        meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                mealList->{
+                    favMealAdapter.setMeals(mealList);
+                    favMealAdapter.notifyDataSetChanged();
+        }
+        );
+//        meals.observe(this, new Observer<List<Meal>>() {
+//            @Override
+//            public void onChanged(List<Meal> meals) {
+//                favMealAdapter.setMeals(meals);
+//                favMealAdapter.notifyDataSetChanged();
+//            }
+//        });
     }
 
     @Override

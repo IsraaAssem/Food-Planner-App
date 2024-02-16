@@ -6,8 +6,10 @@ import com.example.foodplanner.model.Meal;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Flowable;
+
 public interface MealRepository {
-    LiveData<List<Meal>> getStoredMeals();
+    Flowable<List<Meal>> getStoredMeals();
 
     void getStoredMeals(NetworkCallback networkCallback);
 

@@ -9,6 +9,8 @@ import com.example.foodplanner.model.MealsLocalDataSource;
 
 import java.util.List;
 
+import io.reactivex.rxjava3.core.Flowable;
+
 public class MealRepositoryImpl implements MealRepository{
     private MealRemoteDataSource  mealRemoteDataSource;
     private MealsLocalDataSource mealsLocalDataSource;
@@ -25,7 +27,7 @@ public class MealRepositoryImpl implements MealRepository{
     }
 
     @Override
-    public LiveData<List<Meal>> getStoredMeals() {
+    public Flowable<List<Meal>> getStoredMeals() {
         return mealsLocalDataSource.getAllMeals();
     }
 

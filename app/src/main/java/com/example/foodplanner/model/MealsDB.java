@@ -7,7 +7,6 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 @Database(entities = {Meal.class}, version = 1)
 public abstract class MealsDB extends RoomDatabase{
-
         private static MealsDB instance = null;
         public abstract MealsDAO getMealDAO();
         public static synchronized MealsDB getInstance(Context context){

@@ -1,12 +1,10 @@
 package com.example.foodplanner.network;
-
 import android.util.Log;
-
 import com.example.foodplanner.model.Meals;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -36,26 +34,18 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
         MealService mealService = retrofit.create(MealService.class);
-        Call<Meals> call = mealService.getMeals();
-        call.enqueue(new Callback<Meals>() {
-            @Override
-            public void onResponse(Call<Meals> call, Response<Meals> response) {
-                if (response.isSuccessful()) {
-                    Meals meals = response.body();
-
-                    networkCallback.onSuccessResult(meals.getMeals());
-                } else {
-                    Log.e(TAG, "Failed to fetch data: " + response.message());
+        Observable<Meals> call = mealService.getMeals();
+        call.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                item->{
+                    networkCallback.onSuccessResult( item.getMeals());
+                },
+                error->  {Log.e(TAG, "Failed to fetch data: " + error.getMessage());
+                    networkCallback.onFailureResult(error.getMessage());
                 }
-            }
-            @Override
-            public void onFailure(Call<Meals> call, Throwable t) {
-                Log.e(TAG, "Retrofit onFailure: " + t.getMessage());////
-                networkCallback.onFailureResult(t.getMessage());
-            }
-        });
+        );
 
     }
 }
