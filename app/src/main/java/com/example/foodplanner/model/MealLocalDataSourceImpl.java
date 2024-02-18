@@ -1,20 +1,18 @@
 package com.example.foodplanner.model;
 
-import static androidx.core.content.ContentProviderCompat.requireContext;
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
-import androidx.lifecycle.LiveData;
+import com.google.firebase.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import kotlinx.coroutines.flow.Flow;
 
 public class MealLocalDataSourceImpl implements MealsLocalDataSource{
     private Flowable<List<Meal>> storedMeals;
@@ -30,15 +28,25 @@ public class MealLocalDataSourceImpl implements MealsLocalDataSource{
     private  MealLocalDataSourceImpl(Context context){
         MealsDB db=MealsDB.getInstance(context.getApplicationContext());
         dao=db.getMealDAO();
-        storedMeals=dao.getMeals();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Log.e("FoodUser",FirebaseAuth.getInstance().getCurrentUser().getEmail()+":"+FirebaseAuth.getInstance().getCurrentUser().getUid());
+            storedMeals = dao.getFavouriteMeals(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }else{
+            storedMeals = dao.getFavouriteMeals("");
+        }
+
         this.context= context;
     }
 
     @Override
     public void insertMeal(Meal meal) {
         dao.insertMeal(meal).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+//                ()->{ Toast.makeText(context, "Meal inserted Successfully!", Toast.LENGTH_SHORT).show();},
                 ()->{},
-                (Throwable throwable)-> Toast.makeText(context, "Error inserting meal!", Toast.LENGTH_SHORT).show()
+                (Throwable throwable)-> {
+                    throwable.printStackTrace();
+                    Toast.makeText(context, "Error inserting meal!", Toast.LENGTH_SHORT).show();
+                }
         );
 //        new Thread(new Runnable() {
 //            @Override
@@ -65,5 +73,14 @@ public class MealLocalDataSourceImpl implements MealsLocalDataSource{
     @Override
     public Flowable<List<Meal>> getAllMeals() {
         return storedMeals;
+    }
+
+    @Override
+    public Single<Meal> getMealById(int id) {
+        return dao.getMealById(id);
+    }
+    @Override
+    public Single<Meal> getMealByDate(String date) {
+        return dao.getMealByDate(date);
     }
 }

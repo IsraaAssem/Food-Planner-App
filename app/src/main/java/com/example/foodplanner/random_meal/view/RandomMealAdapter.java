@@ -11,9 +11,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodplanner.R;
+import com.example.foodplanner.favourites.view.FavMealFragmentDirections;
 import com.example.foodplanner.model.Meal;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -46,9 +48,9 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Me
 
             Meal currentMeal=meals.get(position);
         Log.i(TAG, "onBindViewHolder: "+position);
-            holder.mealName.setText(currentMeal.getMealName());
+            holder.mealName.setText(currentMeal.getStrMeal());
 
-            Glide.with(context).load(meals.get(position).getMealImage())
+            Glide.with(context).load(meals.get(position).getStrMealThumb())
                     .apply(new RequestOptions().override(270,255))
                     .placeholder(R.drawable.loading)
                     .error(R.drawable.ic_launcher_foreground)
@@ -57,7 +59,10 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Me
                 @Override
                 public void onClick(View v) {
                     listener.onMealClick(currentMeal);
+                    HomeFragmentDirections.ActionHomeFragmentToMealDetailsFragment action=HomeFragmentDirections.actionHomeFragmentToMealDetailsFragment(currentMeal.getIdMeal());
+                    Navigation.findNavController(v).navigate(action);
                 }
+
             });
 
     }

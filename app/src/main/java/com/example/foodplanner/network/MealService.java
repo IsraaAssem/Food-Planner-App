@@ -6,4 +6,6 @@ import retrofit2.http.GET;
 public interface MealService {
         @GET("random.php")
         Observable<Meals> getMeals();
+        @GET("lookup.php?i=52772")
+        Observable<Meals> getMealDetails();
 }

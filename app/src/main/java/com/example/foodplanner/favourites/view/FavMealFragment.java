@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,12 +33,13 @@ import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class FavMealFragment extends Fragment  implements OnFavouriteClickListener, FavView  {
+public class FavMealFragment extends Fragment implements OnFavouriteClickListener, FavView {
 
     RecyclerView favRv;
     FavMealAdapter favMealAdapter;
     FavouritePresenter favPresenter;
     LinearLayoutManager linearLayoutManager;
+
     public FavMealFragment() {
 
     }
@@ -59,13 +61,13 @@ public class FavMealFragment extends Fragment  implements OnFavouriteClickListen
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        linearLayoutManager=new LinearLayoutManager(getContext());
-        favMealAdapter=new FavMealAdapter(getContext(),new ArrayList<>(),this);
-        favPresenter = new FavouritePresenterImpl(this , MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(),
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        favMealAdapter = new FavMealAdapter(getContext(), new ArrayList<>(), this);
+        favPresenter = new FavouritePresenterImpl(this, MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(),
                 MealLocalDataSourceImpl.getInstance(getContext())
         ));
         //linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        favRv=view.findViewById(R.id.favRv);
+        favRv = view.findViewById(R.id.favRv);
         favRv.setLayoutManager(linearLayoutManager);
         favRv.setAdapter(favMealAdapter);
         favPresenter.getFavMeals();
@@ -73,11 +75,12 @@ public class FavMealFragment extends Fragment  implements OnFavouriteClickListen
 
     @Override
     public void showData(Flowable<List<Meal>> meals) {
+        if(meals != null)
         meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                mealList->{
+                mealList -> {
                     favMealAdapter.setMeals(mealList);
                     favMealAdapter.notifyDataSetChanged();
-        }
+                }
         );
 //        meals.observe(this, new Observer<List<Meal>>() {
 //            @Override
@@ -90,16 +93,16 @@ public class FavMealFragment extends Fragment  implements OnFavouriteClickListen
 
     @Override
     public void showErrMsg(String error) {
-        AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage(error).setTitle("An error occurred");
-        AlertDialog dialog=builder.create();
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
     @Override
     public void onFavListener(Meal meal) {
         favPresenter.removeFromFav(meal);
-        Toast.makeText(getContext(),"Removed from favourites" , Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "Removed from favourites", Toast.LENGTH_LONG).show();
 
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -41,10 +42,10 @@ public class FavMealAdapter  extends RecyclerView.Adapter<FavMealAdapter.MealVie
     public void onBindViewHolder(@NonNull MealViewHolder holder, int position) {
         Meal currentMeal = meals.get(position);
 
-        holder.mealName.setText(currentMeal.getMealName());
+        holder.mealName.setText(currentMeal.getStrMeal());
 
         Glide.with(context)
-                .load(meals.get(position).getMealImage())
+                .load(meals.get(position).getStrMealThumb())
                 .apply(new RequestOptions().override(200, 200))
                 .placeholder(R.drawable.loading)
                 .error(R.drawable.app_logo)
@@ -54,9 +55,7 @@ public class FavMealAdapter  extends RecyclerView.Adapter<FavMealAdapter.MealVie
         holder.btnRemoveFromFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                listener.onFavListener(currentMeal);
-
+                listener.onFavListener(currentMeal);//////////////
             }
         });
     }

@@ -4,6 +4,7 @@ import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.network.MealRepository;
 import com.example.foodplanner.network.NetworkCallback;
 import com.example.foodplanner.random_meal.view.RandomMealView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -20,6 +21,11 @@ public class RandomMealPresenterImpl implements RandomMealPresenter, NetworkCall
     }
     @Override
     public void addToFavourites(Meal meal) {
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            meal.setUserEmail(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        }else{
+            meal.setUserEmail("");
+        }
         repo.insertMeal(meal);
     }
     @Override
