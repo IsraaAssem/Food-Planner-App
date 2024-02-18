@@ -1,27 +1,20 @@
 package com.example.foodplanner.model;
 
-import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
-
 import java.util.List;
-
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Single;
 
-public interface MealsLocalDataSource {
-    public void insertMeal(Meal meal);
-    public void deleteMeal(Meal meal);
-    public Flowable<List<Meal>> getAllMeals();
-    public Single<Meal> getMealById(int id);
-
-    public Single<Meal> getMealByDate(String date);
-
-    Completable addToWeekPlan(PlanMeal planMeal);
+@Dao
+public interface WeekPlanDAO {
+    @Query("SELECT * FROM plan_meals_table where userEmail=:userEmail")
     Flowable<List<PlanMeal>> getPlanMeals(String userEmail);
-
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertToPlan(PlanMeal planMeal);
+    @Delete
     Completable deleteFromPlan (PlanMeal planMeal);
 }

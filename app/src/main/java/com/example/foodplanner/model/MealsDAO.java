@@ -22,6 +22,9 @@ public interface MealsDAO {
     Single<Meal> getMealByDate(String date);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertMeal(Meal meal);
+
     @Delete
     Completable deleteMeal (Meal meal);
+
+
 }

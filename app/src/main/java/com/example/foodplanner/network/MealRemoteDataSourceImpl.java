@@ -13,6 +13,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
     private static final String BASE_URL = "https://www.themealdb.com/api/json/v1/1/";
     private static final String TAG = "MealClient";
     private MealService mealService;
+
     private static MealRemoteDataSourceImpl client=null;
     public static MealRemoteDataSourceImpl getInstance(){
         if(client==null){
@@ -24,6 +25,7 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
         mealService = retrofit.create(MealService.class);
 
@@ -31,12 +33,12 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
     @Override
     public void makeNetworkCall(NetworkCallback networkCallback) {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .build();
-        MealService mealService = retrofit.create(MealService.class);
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+//                .build();
+//        MealService mealService = retrofit.create(MealService.class);
         Observable<Meals> call = mealService.getMeals();
         call.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 item->{

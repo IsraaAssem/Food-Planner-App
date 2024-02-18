@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.MealsLocalDataSource;
+import com.example.foodplanner.model.PlanMeal;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
@@ -88,6 +90,7 @@ public class MealRepositoryImpl implements MealRepository {
             @Override
             public void onError(@NonNull Throwable e) {
                 getRemoteMeals();
+                e.printStackTrace();
             }
         });
     }
@@ -107,4 +110,24 @@ public class MealRepositoryImpl implements MealRepository {
     public void deleteMeal(Meal meal) {
         mealsLocalDataSource.deleteMeal(meal);
     }
+
+    @Override
+    public Completable insertToWeekPlan(PlanMeal meal) {
+        return mealsLocalDataSource.addToWeekPlan(meal);
+    }
+
+    @Override
+    public Flowable<List<PlanMeal>> getPlanMeals(String userEmail) {
+        return mealsLocalDataSource.getPlanMeals(userEmail);
+    }
+
+    @Override
+    public Completable deleteFromPlan(PlanMeal planMeal) {
+        return mealsLocalDataSource.deleteFromPlan(planMeal);
+    }
+
+//    @Override
+//    public void insertToWeekPlan(PlanMeal planMeal) {
+//        mealsLocalDataSource.addToWeekPlan(planMeal);
+//    }
 }

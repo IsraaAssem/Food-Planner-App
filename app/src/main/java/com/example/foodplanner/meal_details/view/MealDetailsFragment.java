@@ -1,7 +1,5 @@
 package com.example.foodplanner.meal_details.view;
 
-import android.media.audiofx.DynamicsProcessing;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +8,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,29 +16,24 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foodplanner.R;
-import com.example.foodplanner.favourites.presenter.FavouritePresenterImpl;
 import com.example.foodplanner.meal_details.presenter.MealDetailsPresenter;
 import com.example.foodplanner.meal_details.presenter.MealDetailsPresenterImpl;
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.MealLocalDataSourceImpl;
+import com.example.foodplanner.model.PlanMeal;
 import com.example.foodplanner.network.MealRemoteDataSourceImpl;
-import com.example.foodplanner.network.MealRepository;
 import com.example.foodplanner.network.MealRepositoryImpl;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -50,6 +42,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     String cookingSteps[];
     int count = 0;
     Button btnAddToFavourite;
+    Button btnAddToWeekPlan;
     ImageView detailMealImage;
     TextView mealName, ingredients, mealCountry, actualSteps, steps, actualIngredients;
     WebView webView;
@@ -85,6 +78,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
         actualIngredients = view.findViewById(R.id.actualIngredients);
         webView = view.findViewById(R.id.webView);
         btnAddToFavourite = view.findViewById(R.id.btnAddToFavourite);
+        btnAddToWeekPlan = view.findViewById(R.id.btnAddToWeekPlan);
         detailMealImage = view.findViewById(R.id.detailMealImage);
 
         id = MealDetailsFragmentArgs.fromBundle(getArguments()).getMealId();
@@ -100,7 +94,13 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
                     btnAddToFavourite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            onMealDetailListener(mealItem);
+                            addToFavOnMealDetailListener(mealItem);
+                        }
+                    });
+                    btnAddToWeekPlan.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            addToPlanOnMealDetailListener(mealItem);
                         }
                     });
                     mealName.append(mealItem.getStrMeal());
@@ -150,9 +150,18 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     }
 
     @Override
-    public void onMealDetailListener(Meal meal) {
-        mealDetailsPresenter.removeFromFav(meal);
-        Toast.makeText(getContext(), "Removed from favourites", Toast.LENGTH_LONG).show();
+    public void addToFavOnMealDetailListener(Meal meal) {
+        mealDetailsPresenter.addToFav(meal);
+        Toast.makeText(getContext(), "Added to Favourites", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void addToPlanOnMealDetailListener(Meal meal) {
+        //showDatePicker
+        PlanMeal planMeal=new PlanMeal(meal.getIdMeal(),meal.getStrMealThumb(),meal.getStrMeal(),meal.getCreatedAt(),meal.getUserEmail());
+        mealDetailsPresenter.addToWeekPlan(planMeal);
+        Toast.makeText(getContext(), "Added to Week Plan", Toast.LENGTH_LONG).show();
+
     }
 
     private List<String> getIngredients(Meal meal) {

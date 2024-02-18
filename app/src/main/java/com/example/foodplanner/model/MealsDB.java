@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Meal.class,PlanMeal.class},version = 5, exportSchema = false)
+@Database(entities = {Meal.class,PlanMeal.class},version = 6, exportSchema = false)
 public abstract class MealsDB extends RoomDatabase{
         private static MealsDB instance = null;
     private static Migration Migration_2_3 = new Migration(2,3) {
@@ -18,10 +18,11 @@ public abstract class MealsDB extends RoomDatabase{
     };
 
     public abstract MealsDAO getMealDAO();
+    public abstract WeekPlanDAO getWeekPlanDAO();
         public static synchronized MealsDB getInstance(Context context){
             if (instance == null){
                 instance = Room.databaseBuilder(context.getApplicationContext(), MealsDB.class, "mealsdb")
-//                        .addMigrations(Migration_2_3)
+                        .addMigrations(Migration_2_3)
                         .fallbackToDestructiveMigration()
                         .build();// .fallbackToDestructiveMigration()
             }

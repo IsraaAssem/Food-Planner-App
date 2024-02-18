@@ -3,6 +3,7 @@ package com.example.foodplanner.meal_details.presenter;
 import com.example.foodplanner.favourites.view.FavView;
 import com.example.foodplanner.meal_details.view.MealDetailsView;
 import com.example.foodplanner.model.Meal;
+import com.example.foodplanner.model.PlanMeal;
 import com.example.foodplanner.network.MealRepository;
 
 public class MealDetailsPresenterImpl implements MealDetailsPresenter {
@@ -20,8 +21,13 @@ public class MealDetailsPresenterImpl implements MealDetailsPresenter {
     }
 
     @Override
-    public void removeFromFav(Meal meal) {
-        _repo.deleteMeal(meal);
+    public void addToFav(Meal meal) {
+        _repo.insertMeal(meal);
+    }
+
+    @Override
+    public void addToWeekPlan(PlanMeal meal) {
+         _repo.insertToWeekPlan(meal);
     }
 
 

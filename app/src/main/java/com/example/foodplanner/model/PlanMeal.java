@@ -11,6 +11,15 @@ public class PlanMeal {
     String image;
     String mealName;
     String date;
+    String userEmail;
+
+    public PlanMeal(int mealId, String image, String mealName, String date, String userEmail) {
+        this.mealId = mealId;
+        this.image = image;
+        this.mealName = mealName;
+        this.date = date;
+        this.userEmail = userEmail;
+    }
 
     public void setMealName(String mealName) {
         this.mealName = mealName;
@@ -44,5 +53,11 @@ public class PlanMeal {
         this.date = date;
     }
 
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+    }
 
+    public String getUserEmail() {
+        return userEmail;
+    }
 }

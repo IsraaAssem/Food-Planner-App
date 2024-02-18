@@ -3,5 +3,7 @@ package com.example.foodplanner.meal_details.view;
 import com.example.foodplanner.model.Meal;
 
 public interface OnMealDetailsClickListener {
-    public void onMealDetailListener(Meal meal);
+    public void addToFavOnMealDetailListener(Meal meal);
+    public void addToPlanOnMealDetailListener(Meal meal);
+
 }
