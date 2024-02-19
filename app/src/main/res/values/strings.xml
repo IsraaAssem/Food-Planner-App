@@ -7,4 +7,7 @@
     <string name="mealCountry">"Origin Country: "</string>
     <string name="ingredients">"Ingredients: "</string>
     <string name="steps">"Steps: "</string>
+    <string name="category">Category</string>
+    <string name="country">Country</string>
+    <string name="ingredient">Ingredient</string>
 </resources>

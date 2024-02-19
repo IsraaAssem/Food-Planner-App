@@ -6,4 +6,5 @@
     </style>
 
     <style name="Theme.FoodPlanner" parent="Base.Theme.FoodPlanner" />
+    <style name="Theme.FoodPlanner.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

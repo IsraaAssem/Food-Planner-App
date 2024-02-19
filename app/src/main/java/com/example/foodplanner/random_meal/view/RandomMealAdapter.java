@@ -72,7 +72,9 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Me
 
     @Override
     public int getItemCount() {
+        if (meals != null)
         return meals.size();
+        return 0;
     }
 
     class MealViewHolder extends RecyclerView.ViewHolder{

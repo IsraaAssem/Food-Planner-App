@@ -5,11 +5,23 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 @Entity(tableName = "plan_meals_table")
 public class PlanMeal {
-    @NonNull
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    int id;
     int mealId;
     String image;
     String mealName;
+
+    @Override
+    public String toString() {
+        return "PlanMeal{" +
+                "mealId=" + mealId +
+                ", image='" + image + '\'' +
+                ", mealName='" + mealName + '\'' +
+                ", date='" + date + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                '}';
+    }
+
     String date;
     String userEmail;
 

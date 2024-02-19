@@ -75,13 +75,14 @@ public class FavMealFragment extends Fragment implements OnFavouriteClickListene
 
     @Override
     public void showData(Flowable<List<Meal>> meals) {
-        if(meals != null)
-        meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                mealList -> {
-                    favMealAdapter.setMeals(mealList);
-                    favMealAdapter.notifyDataSetChanged();
-                }
-        );
+        if(meals != null) {
+            meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                    mealList -> {
+                        favMealAdapter.setMeals(mealList);
+                        favMealAdapter.notifyDataSetChanged();
+                    }
+            );
+        }
 //        meals.observe(this, new Observer<List<Meal>>() {
 //            @Override
 //            public void onChanged(List<Meal> meals) {

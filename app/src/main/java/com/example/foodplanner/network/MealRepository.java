@@ -1,11 +1,5 @@
 package com.example.foodplanner.network;
 
-import androidx.lifecycle.LiveData;
-import androidx.room.Delete;
-import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
-import androidx.room.Query;
-
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.PlanMeal;
 
@@ -19,13 +13,18 @@ public interface MealRepository {
     Flowable<List<Meal>> getStoredMeals();
 
     void getStoredMeals(NetworkCallback networkCallback);
+    void getMealsByCategory(String Category,NetworkCallback networkCallback);
+    void getCategories(SearchCallback networkCallback);
+    void getCountries(SearchCallback networkCallback);
 
-    void insertMeal(Meal meal);
+    void insertMeal(Meal meal,boolean isFav);
     Single<Meal> getMealById(int id);
 
     void deleteMeal(Meal meal);
 
-    Completable insertToWeekPlan(PlanMeal meal);
+    void insertToWeekPlan(PlanMeal meal);
     Flowable<List<PlanMeal>> getPlanMeals(String userEmail);
     Completable deleteFromPlan (PlanMeal planMeal);
+
+    Flowable<List<Meal>> getFavouriteMeals();
 }

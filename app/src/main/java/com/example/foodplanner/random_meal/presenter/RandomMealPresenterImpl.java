@@ -1,5 +1,7 @@
 package com.example.foodplanner.random_meal.presenter;
 
+import android.widget.Toast;
+
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.network.MealRepository;
 import com.example.foodplanner.network.NetworkCallback;
@@ -20,13 +22,17 @@ public class RandomMealPresenterImpl implements RandomMealPresenter, NetworkCall
         repo.getStoredMeals(this);
     }
     @Override
+    public void getMealsByCategory(String Category) {
+        repo.getMealsByCategory(Category,this);
+    }
+    @Override
     public void addToFavourites(Meal meal) {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            meal.setUserEmail(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            meal.setUserEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         }else{
             meal.setUserEmail("");
         }
-        repo.insertMeal(meal);
+        repo.insertMeal(meal,true);
     }
     @Override
     public void onSuccessResult(List<Meal> meals) {

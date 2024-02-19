@@ -18,7 +18,7 @@ public interface MealsDAO {
     Flowable<List<Meal>> getFavouriteMeals(String userEmail);
     @Query("SELECT * FROM meals_table where idMeal=:id")
     Single<Meal> getMealById(int id);
-    @Query("SELECT * FROM meals_table where createdAt=:date")
+    @Query("SELECT * FROM meals_table where createdAt=:date limit 1")
     Single<Meal> getMealByDate(String date);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insertMeal(Meal meal);

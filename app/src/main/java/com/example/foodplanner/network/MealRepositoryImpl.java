@@ -1,9 +1,10 @@
 package com.example.foodplanner.network;
 
 import android.util.Log;
+import android.widget.Toast;
 
-import androidx.lifecycle.LiveData;
-
+import com.example.foodplanner.model.Category;
+import com.example.foodplanner.model.Country;
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.MealsLocalDataSource;
 import com.example.foodplanner.model.PlanMeal;
@@ -17,10 +18,11 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Action;
+import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class MealRepositoryImpl implements MealRepository {
@@ -59,7 +61,7 @@ public class MealRepositoryImpl implements MealRepository {
 
                         if (meals != null && meals.size() > 0) {
                             meals.get(0).setCreatedAt(dateString);
-                            insertMeal(meals.get(0));
+                            insertMeal(meals.get(0),false);
                         }
                         networkCallback.onSuccessResult(meals);
                     }
@@ -94,26 +96,109 @@ public class MealRepositoryImpl implements MealRepository {
             }
         });
     }
+    @Override
+    public void getMealsByCategory(String category,NetworkCallback networkCallback) {
+
+
+        mealRemoteDataSource.makeNetworkCall(category ,new NetworkCallback() {
+            @Override
+            public void onSuccessResult(List<Meal> meals) {
+
+                networkCallback.onSuccessResult(meals);
+            }
+
+            @Override
+            public void onFailureResult(String errMsg) {
+                networkCallback.onFailureResult(errMsg);
+            }
+        });
+    }
+
+
 
     @Override
-    public void insertMeal(Meal meal) {
-        mealsLocalDataSource.insertMeal(meal);
+    public void getCategories(SearchCallback networkCallback) {
+        mealRemoteDataSource.getCategories(new SearchCallback() {
+            @Override
+            public void onSuccessCategoryResult(List<Category> categories) {
+                networkCallback.onSuccessCategoryResult(categories);
+            }
+
+            @Override
+            public void onSuccessCountriesResult(List<Country> categories) {
+
+            }
+            @Override
+            public void onFailureCategoryResult(String errMsg) {
+                networkCallback.onFailureCategoryResult(errMsg);
+            }
+
+        });
+    }
+    @Override
+    public void getCountries(SearchCallback networkCallback) {
+        mealRemoteDataSource.getCountries(new SearchCallback() {
+            @Override
+            public void onSuccessCategoryResult(List<Category> categories) {
+                networkCallback.onSuccessCategoryResult(categories);
+            }
+
+            @Override
+            public void onSuccessCountriesResult(List<Country> categories) {
+                networkCallback.onSuccessCountriesResult(categories);
+
+            }
+
+            @Override
+            public void onFailureCategoryResult(String errMsg) {
+                networkCallback.onFailureCategoryResult(errMsg);
+            }
+
+        });
+    }
+
+    @Override
+    public void insertMeal(Meal meal,boolean isFav) {
+        mealsLocalDataSource.insertMeal(meal,isFav).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnError(throwable -> {
+            throwable.printStackTrace();
+           // Toast.makeText(, "Error inserting meals!", Toast.LENGTH_SHORT).show();
+        }).subscribe(new Action() {
+            @Override
+            public void run() throws Throwable {
+
+            }
+        }, new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Throwable {
+                throwable.printStackTrace();
+            }
+        });
         Log.i("TAG", "insert Meal: ");
     }
 
     @Override
     public Single<Meal> getMealById(int id) {
         return mealsLocalDataSource.getMealById(id);
+                //.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+
+//                .doOnError(throwable -> {
+//            throwable.printStackTrace();
+//            //Toast.makeText(context, "Error retrieving meals!", Toast.LENGTH_SHORT).show();
+//        });
     }
 
     @Override
     public void deleteMeal(Meal meal) {
         mealsLocalDataSource.deleteMeal(meal);
+//        .doOnError(throwable -> {
+//           throwable.printStackTrace();
+//          // Toast.makeText(context, "Error retrieving meals!", Toast.LENGTH_SHORT).show();
+//       });
     }
 
     @Override
-    public Completable insertToWeekPlan(PlanMeal meal) {
-        return mealsLocalDataSource.addToWeekPlan(meal);
+    public void insertToWeekPlan(PlanMeal meal) {
+        mealsLocalDataSource.addToWeekPlan(meal);
     }
 
     @Override
@@ -122,12 +207,14 @@ public class MealRepositoryImpl implements MealRepository {
     }
 
     @Override
+    public Flowable<List<Meal>> getFavouriteMeals() {
+        return mealsLocalDataSource.getFavouriteMeals();
+    }
+
+    @Override
     public Completable deleteFromPlan(PlanMeal planMeal) {
         return mealsLocalDataSource.deleteFromPlan(planMeal);
     }
 
-//    @Override
-//    public void insertToWeekPlan(PlanMeal planMeal) {
-//        mealsLocalDataSource.addToWeekPlan(planMeal);
-//    }
+
 }

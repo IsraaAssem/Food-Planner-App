@@ -32,6 +32,7 @@ public class HomeFragment extends Fragment implements OnMealClickListener,Random
     RandomMealAdapter randomMealAdapter;
     RandomMealPresenter randomMealPresenter;
     Button addToFavourites;
+    String category;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -51,13 +52,18 @@ public class HomeFragment extends Fragment implements OnMealClickListener,Random
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        if (getArguments() != null && !getArguments().getString("category","").isEmpty())
+            category = getArguments().getString("category");
         linearLayoutManager = new LinearLayoutManager(getContext());
         randomMealAdapter = new RandomMealAdapter(getContext(), new ArrayList<>(),this);
         recyclerView=view.findViewById(R.id.mealRecyclerView);
         randomMealPresenter=new RandomMealPresenterImpl(this, MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(randomMealAdapter);
-        randomMealPresenter.getMeals();
+        if (category != null && !category.isEmpty()){
+            randomMealPresenter.getMealsByCategory(category);
+        }
+        else randomMealPresenter.getMeals();
     }
 
     @Override

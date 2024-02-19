@@ -1,8 +1,16 @@
 package com.example.foodplanner.favourites.presenter;
 
+import android.widget.Toast;
+
 import com.example.foodplanner.favourites.view.FavView;
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.network.MealRepository;
+
+import java.util.List;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class FavouritePresenterImpl implements FavouritePresenter{
     private FavView _view;
@@ -14,7 +22,7 @@ public class FavouritePresenterImpl implements FavouritePresenter{
     }
     @Override
     public void getFavMeals() {
-        _view.showData(_repo.getStoredMeals());
+        _view.showData(_repo.getFavouriteMeals());
     }
 
     @Override

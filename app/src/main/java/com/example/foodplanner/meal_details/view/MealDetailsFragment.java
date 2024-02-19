@@ -90,7 +90,8 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     @Override
     public void showData(Single<Meal> meal) {
         meal.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                mealItem -> {//update ui
+                mealItem -> {try{
+                    //update ui
                     btnAddToFavourite.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -104,7 +105,8 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
                         }
                     });
                     mealName.append(mealItem.getStrMeal());
-                    mealCountry.append(mealItem.getStrArea());
+                    if (mealCountry != null &mealItem.getStrArea() != null)
+                        mealCountry.append(mealItem.getStrArea());
                     Glide.with(getContext())
                             .load(mealItem.getStrMealThumb())
                             .apply(new RequestOptions().override(200, 200))
@@ -112,16 +114,19 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
                             .error(R.drawable.app_logo)
                             .into(detailMealImage);
 
+                    if(mealItem .getStrInstructions() != null)
                     cookingSteps = mealItem.getStrInstructions().split("\\.");
+                    if(cookingSteps != null)
                     for (String step : cookingSteps) {
                         count++;
                         actualSteps.append("Step " + count + ": " + step + "*\n");
                     }
                     getIngredients(mealItem);
+                    if(ingredientsMeasures != null)
                     for(String ingred:ingredientsMeasures){
                         if(ingred!=null && !ingred.isEmpty()){
-                        actualIngredients.append(ingred+"\n");
-                    }}
+                            actualIngredients.append(ingred+"\n");
+                        }}
                     //videoView.setVideoURI(Uri.parse(mealItem.getStrYoutube()));
                     //webView = view.findViewById(R.id.webView);
                     WebSettings webSettings = webView.getSettings();
@@ -134,6 +139,10 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
                     Log.e(TAG, "showData: "+videoUrl );
                     String html = "<iframe width=\"100%\" height=\"100%\" src=\"" + videoUrl + "\" frameborder=\"0\" allowfullscreen></iframe>";
                     webView.loadData(html, "text/html", "utf-8");
+                }catch(Exception e){
+                    e.printStackTrace();
+
+                }
                 },
                 error -> {
                     showErrMsg(error.getMessage());
@@ -159,6 +168,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     public void addToPlanOnMealDetailListener(Meal meal) {
         //showDatePicker
         PlanMeal planMeal=new PlanMeal(meal.getIdMeal(),meal.getStrMealThumb(),meal.getStrMeal(),meal.getCreatedAt(),meal.getUserEmail());
+        System.out.println(planMeal);
         mealDetailsPresenter.addToWeekPlan(planMeal);
         Toast.makeText(getContext(), "Added to Week Plan", Toast.LENGTH_LONG).show();
 
