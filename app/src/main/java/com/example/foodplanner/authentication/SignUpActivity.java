@@ -48,6 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
     EditText editTextUpName,editTextUpEmail,editTextUpPassword,editTextUpConfirmPassword;
     Button buttonUpConfirm;
     TextView textViewAlreadyUser;
+    TextView guest;
     ImageView imageViewGoogleUp,imageViewFacebookUp;
     boolean passwordVisible;
     public static final int RC_SIGN_IN = 1234;
@@ -72,6 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         buttonUpConfirm = findViewById(R.id.buttonUpConfirm);
         textViewAlreadyUser = findViewById(R.id.textViewAlreadyUser);
         imageViewGoogleUp = findViewById(R.id.imageViewGoogleUp);
+        guest = findViewById(R.id.guest);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -81,7 +83,13 @@ public class SignUpActivity extends AppCompatActivity {
         customProgressDialog.setImageLocation(getResources().getDrawable(R.drawable.app_logo));
         customProgressDialog.setLayoutColor(getResources().getColor(R.color.white));
         customProgressDialog.setCancelableOnTouchOutside(false);
-
+        guest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignUpActivity.this,MainActivity.class));
+                Toast.makeText(getApplicationContext(), "Login to see all features!", Toast.LENGTH_SHORT).show();
+            }
+        });
         buttonUpConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

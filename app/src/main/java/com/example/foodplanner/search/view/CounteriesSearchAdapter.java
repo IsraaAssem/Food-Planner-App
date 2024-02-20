@@ -44,7 +44,7 @@ public class CounteriesSearchAdapter extends RecyclerView.Adapter<CounteriesSear
     @Override
     public CounteriesSearchAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater =(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view =inflater.inflate(R.layout.country_item,parent,false);
+        View view =inflater.inflate(R.layout.meal_item2,parent,false);
         CounteriesSearchAdapter.ItemViewHolder itemViewHolder=new CounteriesSearchAdapter.ItemViewHolder(view);
         Log.i(TAG, "onCreateViewHolder: ");
         itemViewHolder.btnAddToFav.setText("View");

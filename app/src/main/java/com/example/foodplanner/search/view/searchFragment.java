@@ -118,6 +118,7 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
             public boolean onQueryTextChange(String newText) {
                 categoriesSearchAdapter.filter(newText);
                 countriesSearchAdapter.filter(newText);
+                ingredientSearchAdapter.filter(newText);
                 return true;
             }
         });

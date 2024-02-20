@@ -1,5 +1,7 @@
 package com.example.foodplanner.meal_details.view;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,9 +32,14 @@ import com.example.foodplanner.model.MealLocalDataSourceImpl;
 import com.example.foodplanner.model.PlanMeal;
 import com.example.foodplanner.network.MealRemoteDataSourceImpl;
 import com.example.foodplanner.network.MealRepositoryImpl;
+import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Single;
@@ -40,6 +48,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class MealDetailsFragment extends Fragment implements MealDetailsView, OnMealDetailsClickListener {
     MealDetailsPresenter mealDetailsPresenter;
     String cookingSteps[];
+    String date;
     int count = 0;
     Button btnAddToFavourite;
     Button btnAddToWeekPlan;
@@ -48,7 +57,7 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     WebView webView;
     private String TAG = "Ingredient";
     int id;
-    List<String> ingredientsMeasures=new ArrayList<>();
+    List<String> ingredientsMeasures = new ArrayList<>();
 
     public MealDetailsFragment() {
         // Required empty public constructor
@@ -90,65 +99,84 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
     @Override
     public void showData(Single<Meal> meal) {
         meal.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                mealItem -> {try{
-                    //update ui
-                    btnAddToFavourite.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            addToFavOnMealDetailListener(mealItem);
-                        }
-                    });
-                    btnAddToWeekPlan.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            addToPlanOnMealDetailListener(mealItem);
-                        }
-                    });
-                    mealName.append(mealItem.getStrMeal());
-                    if (mealCountry != null &mealItem.getStrArea() != null)
-                        mealCountry.append(mealItem.getStrArea());
-                    Glide.with(getContext())
-                            .load(mealItem.getStrMealThumb())
-                            .apply(new RequestOptions().override(200, 200))
-                            .placeholder(R.drawable.loading)
-                            .error(R.drawable.app_logo)
-                            .into(detailMealImage);
+                mealItem -> {
+                    try {
+                        //update ui
+                        btnAddToFavourite.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                                    Toast.makeText(getContext(), "Login to get all features", Toast.LENGTH_SHORT).show();
+                                } else
+                                    addToFavOnMealDetailListener(mealItem);
+                            }
+                        });
+                        btnAddToWeekPlan.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                                    Toast.makeText(getContext(), "Login to get all features", Toast.LENGTH_SHORT).show();
+                                } else
+                                    addToPlanOnMealDetailListener(mealItem);
+                            }
+                        });
+                        mealName.append(mealItem.getStrMeal());
 
-                    if(mealItem .getStrInstructions() != null)
-                    cookingSteps = mealItem.getStrInstructions().split("\\.");
-                    if(cookingSteps != null)
-                    for (String step : cookingSteps) {
-                        count++;
-                        actualSteps.append("Step " + count + ": " + step + "*\n");
+                        if (mealCountry != null & mealItem.getStrArea() != null)
+                            mealCountry.append(mealItem.getStrArea());
+                        else {
+                            mealCountry.setText("");
+                        }
+                        Glide.with(getContext())
+                                .load(mealItem.getStrMealThumb())
+                                .apply(new RequestOptions().override(200, 200))
+                                .placeholder(R.drawable.loading)
+                                .error(R.drawable.app_logo)
+                                .into(detailMealImage);
+
+                        if (mealItem.getStrInstructions() != null)
+                            cookingSteps = mealItem.getStrInstructions().split("\\.");
+                        else {
+                            steps.setText("");
+                        }
+                        if (cookingSteps != null)
+                            for (String step : cookingSteps) {
+                                count++;
+                                actualSteps.append("Step " + count + ": " + step + "*\n");
+                            }
+                        getIngredients(mealItem);
+                        if (ingredientsMeasures != null) {
+                            for (String ingred : ingredientsMeasures) {
+                                if (ingred != null && !ingred.isEmpty())
+                                    actualIngredients.append(ingred + "\n");
+                            }
+                        } else {
+                            ingredients.setText("");
+                            actualIngredients.setText("");
+                        }
+                        //videoView.setVideoURI(Uri.parse(mealItem.getStrYoutube()));
+                        //webView = view.findViewById(R.id.webView);
+                        WebSettings webSettings = webView.getSettings();
+                        webSettings.setJavaScriptEnabled(true);
+                        webSettings.setLoadWithOverviewMode(true);
+                        webSettings.setUseWideViewPort(true);
+                        // Set a WebChromeClient to enable video playback
+                        webView.setWebChromeClient(new WebChromeClient());
+                        String videoUrl = "https://www.youtube.com/embed/IxhIa3eZxz8"; //mealItem.getStrYoutube();
+                        Log.e(TAG, "showData: " + videoUrl);
+                        String html = "<iframe width=\"100%\" height=\"100%\" src=\"" + videoUrl + "\" frameborder=\"0\" allowfullscreen></iframe>";
+                        webView.loadData(html, "text/html", "utf-8");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+
                     }
-                    getIngredients(mealItem);
-                    if(ingredientsMeasures != null)
-                    for(String ingred:ingredientsMeasures){
-                        if(ingred!=null && !ingred.isEmpty()){
-                            actualIngredients.append(ingred+"\n");
-                        }}
-                    //videoView.setVideoURI(Uri.parse(mealItem.getStrYoutube()));
-                    //webView = view.findViewById(R.id.webView);
-                    WebSettings webSettings = webView.getSettings();
-                    webSettings.setJavaScriptEnabled(true);
-                    webSettings.setLoadWithOverviewMode(true);
-                    webSettings.setUseWideViewPort(true);
-                    // Set a WebChromeClient to enable video playback
-                    webView.setWebChromeClient(new WebChromeClient());
-                    String videoUrl ="https://www.youtube.com/embed/IxhIa3eZxz8"; //mealItem.getStrYoutube();
-                    Log.e(TAG, "showData: "+videoUrl );
-                    String html = "<iframe width=\"100%\" height=\"100%\" src=\"" + videoUrl + "\" frameborder=\"0\" allowfullscreen></iframe>";
-                    webView.loadData(html, "text/html", "utf-8");
-                }catch(Exception e){
-                    e.printStackTrace();
-
-                }
                 },
                 error -> {
                     showErrMsg(error.getMessage());
                 }
         );
     }
+
 
     @Override
     public void showErrMsg(String error) {
@@ -166,12 +194,56 @@ public class MealDetailsFragment extends Fragment implements MealDetailsView, On
 
     @Override
     public void addToPlanOnMealDetailListener(Meal meal) {
-        //showDatePicker
-        PlanMeal planMeal=new PlanMeal(meal.getIdMeal(),meal.getStrMealThumb(),meal.getStrMeal(),meal.getCreatedAt(),meal.getUserEmail());
-        System.out.println(planMeal);
-        mealDetailsPresenter.addToWeekPlan(planMeal);
-        Toast.makeText(getContext(), "Added to Week Plan", Toast.LENGTH_LONG).show();
+//        String email="";
+//        if (FirebaseAuth.getInstance().getCurrentUser()!=null)
+//            email=FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Update the selectedDate string
+                        calendar.set(year, month, dayOfMonth);
+                        date = DateFormat.getDateInstance().format(calendar.getTime());
+                        Log.e("TAG", "onDateSet: " + date);
+                        String email = "";
+                        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+                            email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+                        PlanMeal planMeal = new PlanMeal(meal.getIdMeal(), meal.getStrMealThumb(), meal.getStrMeal(), date, email);
+                        mealDetailsPresenter.addToWeekPlan(planMeal);
+                        Toast.makeText(getContext(), "Added to Week Plan", Toast.LENGTH_LONG).show();
+                    }
+                },
+                year, month, dayOfMonth);
+        datePickerDialog.show();
+        // PlanMeal planMeal=new PlanMeal(meal.getIdMeal(),meal.getStrMealThumb(),meal.getStrMeal(),date,email);
+        // System.out.println(planMeal);
+        Log.e("TAG", "onDateSet:2 " + date);
+        //mealDetailsPresenter.addToWeekPlan(planMeal);
 
+
+    }
+
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Update the selectedDate string
+                        calendar.set(year, month, dayOfMonth);
+                        date = DateFormat.getDateInstance().format(calendar.getTime());
+                        Log.e("TAG", "onDateSet: " + date);
+                    }
+                },
+                year, month, dayOfMonth);
+        datePickerDialog.show();
     }
 
     private List<String> getIngredients(Meal meal) {

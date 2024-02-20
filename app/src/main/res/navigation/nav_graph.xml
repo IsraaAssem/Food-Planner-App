@@ -35,7 +35,7 @@
         tools:layout="@layout/fragment_search" />
     <fragment
         android:id="@+id/weekPlanFragment"
-        android:name="com.example.foodplanner.weekPlanFragment"
+        android:name="com.example.foodplanner.weekplan.view.weekPlanFragment"
         android:label="Week Plan"
         tools:layout="@layout/fragment_week_plan" />
     <fragment

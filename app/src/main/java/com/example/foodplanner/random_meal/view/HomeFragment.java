@@ -69,7 +69,7 @@ public class HomeFragment extends Fragment implements OnMealClickListener,Random
     @Override
     public void onMealClick(Meal meal) {
         randomMealPresenter.addToFavourites(meal);
-        Toast.makeText(getContext(),"Added to Favourites." , Toast.LENGTH_LONG).show();
+        //Toast.makeText(getContext(),"Added to Favourites." , Toast.LENGTH_LONG).show();
 
     }
 

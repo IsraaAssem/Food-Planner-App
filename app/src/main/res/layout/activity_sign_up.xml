@@ -126,6 +126,7 @@
             app:layout_constraintTop_toBottomOf="@id/buttonUpConfirm"
             app:layout_constraintRight_toRightOf="@id/buttonUpConfirm"/>
 
+
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="360dp"
@@ -172,6 +173,20 @@
             android:text="Sign Up With"
             android:layout_gravity="center_vertical"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/guest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:text="Continue as guest"
+            android:textStyle="bold"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintLeft_toLeftOf="@id/linearLayout"
+            app:layout_constraintRight_toRightOf="@id/linearLayout"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
         <ImageView
             android:id="@+id/imageViewGoogleUp"
             android:layout_width="50dp"

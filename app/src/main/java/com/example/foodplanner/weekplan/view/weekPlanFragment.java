@@ -1,4 +1,4 @@
-package com.example.foodplanner.favourites.view;
+package com.example.foodplanner.weekplan.view;
 
 import android.os.Bundle;
 
@@ -6,9 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,10 +17,14 @@ import android.widget.Toast;
 import com.example.foodplanner.R;
 import com.example.foodplanner.favourites.presenter.FavouritePresenter;
 import com.example.foodplanner.favourites.presenter.FavouritePresenterImpl;
+import com.example.foodplanner.favourites.view.FavMealAdapter;
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.MealLocalDataSourceImpl;
+import com.example.foodplanner.model.PlanMeal;
 import com.example.foodplanner.network.MealRemoteDataSourceImpl;
 import com.example.foodplanner.network.MealRepositoryImpl;
+import com.example.foodplanner.weekplan.presenter.WeekPlanPresenter;
+import com.example.foodplanner.weekplan.presenter.WeekPlanPresenterImpl;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -31,18 +32,16 @@ import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class FavMealFragment extends Fragment implements OnFavouriteClickListener, FavView {
-
+public class weekPlanFragment extends Fragment implements WeekPlanView,OnWeekMealClickListener{
     RecyclerView favRv;
-    FavMealAdapter favMealAdapter;
-    FavouritePresenter favPresenter;
+    WeekMealAdapter weekMealAdapter;
+    WeekPlanPresenter weekPlanPresenter;
     LinearLayoutManager linearLayoutManager;
 
-    public FavMealFragment() {
-
+    public weekPlanFragment() {
+        // Required empty public constructor
     }
 
 
@@ -56,7 +55,8 @@ public class FavMealFragment extends Fragment implements OnFavouriteClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fav, container, false);
+        return inflater.inflate(R.layout.fragment_week_plan, container, false);
+
     }
 
     @Override
@@ -67,27 +67,34 @@ public class FavMealFragment extends Fragment implements OnFavouriteClickListene
         }
         else{
         linearLayoutManager = new LinearLayoutManager(getContext());
-        favMealAdapter = new FavMealAdapter(getContext(), new ArrayList<>(), this);
-        favPresenter = new FavouritePresenterImpl(this, MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(),
+        weekMealAdapter = new WeekMealAdapter(getContext(), new ArrayList<>(), this);
+        weekPlanPresenter = new WeekPlanPresenterImpl(this, MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(),
                 MealLocalDataSourceImpl.getInstance(getContext())
         ));
         //linearLayoutManager.setOrientation(RecyclerView.HORIZONTAL);
         favRv = view.findViewById(R.id.favRv);
         favRv.setLayoutManager(linearLayoutManager);
-        favRv.setAdapter(favMealAdapter);
-        favPresenter.getFavMeals();}
+        favRv.setAdapter(weekMealAdapter);
+        weekPlanPresenter.getPlanMeals();}
     }
 
     @Override
-    public void showData(Flowable<List<Meal>> meals) {
-        if(meals != null) {
-            meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                    mealList -> {
-                        favMealAdapter.setMeals(mealList);
-                        favMealAdapter.notifyDataSetChanged();
-                    }
-            );
-        }
+    public void onPlanListener(PlanMeal meal) {
+        weekPlanPresenter.removeFromPlan(meal);
+        Toast.makeText(getContext(), "Removed from Plan", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showData(Flowable<List<PlanMeal>> meals) {
+
+            if(meals != null) {
+                meals.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                        mealList -> {
+                            weekMealAdapter.setMeals(mealList);
+                            weekMealAdapter.notifyDataSetChanged();
+                        }
+                );
+            }
 //        meals.observe(this, new Observer<List<Meal>>() {
 //            @Override
 //            public void onChanged(List<Meal> meals) {
@@ -95,7 +102,8 @@ public class FavMealFragment extends Fragment implements OnFavouriteClickListene
 //                favMealAdapter.notifyDataSetChanged();
 //            }
 //        });
-    }
+        }
+
 
     @Override
     public void showErrMsg(String error) {
@@ -103,12 +111,5 @@ public class FavMealFragment extends Fragment implements OnFavouriteClickListene
         builder.setMessage(error).setTitle("An error occurred");
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
-
-    @Override
-    public void onFavListener(Meal meal) {
-        favPresenter.removeFromFav(meal);
-        Toast.makeText(getContext(), "Removed from favourites", Toast.LENGTH_LONG).show();
-
     }
 }

@@ -55,14 +55,14 @@ public class SearchPresenterImpl implements SearchPresenter, SearchCallback {
     @Override
     public void getIngredients() {
         if (ingredients != null && ingredients.size()>0)
-            onSuccessIngredientResult(ingredients);
+            onSuccessIngredientsResult(ingredients);
         else repo.getIngredients(this);
     }
 
-    private void onSuccessIngredientResult(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-        pView.showIngredients(ingredients);
-    }
+//    private void onSuccessIngredientResult(List<Ingredient> ingredients) {
+//        this.ingredients = ingredients;
+//        pView.showIngredients(ingredients);
+//    }
 
     @Override
     public void onSuccessCategoryResult(List<Category> categories) {

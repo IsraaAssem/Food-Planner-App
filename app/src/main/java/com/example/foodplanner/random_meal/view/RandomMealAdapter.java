@@ -55,6 +55,7 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Me
                     .placeholder(R.drawable.loading)
                     .error(R.drawable.ic_launcher_foreground)
                     .into(holder.mealImage);
+        holder.btnAddToFav.setText("View");
             holder.btnAddToFav.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
