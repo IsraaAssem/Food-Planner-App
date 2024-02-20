@@ -65,7 +65,7 @@ public class CategoriesSearchAdapter extends RecyclerView.Adapter<CategoriesSear
         holder.btnAddToFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onItemClick(category);
+                listener.onCategoryClick(category);
                 NavGraphDirections.ActionToHomeFragment action=NavGraphDirections.actionToHomeFragment(category.getStrCategory());
                 Navigation.findNavController(v).navigate(action);
             }

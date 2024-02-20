@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.example.foodplanner.model.CategoriesResponse;
 import com.example.foodplanner.model.Countries;
+import com.example.foodplanner.model.Ingredients;
 import com.example.foodplanner.model.Meals;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -72,12 +73,12 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
     @SuppressLint("CheckResult")
     @Override
     public void getCategories(SearchCallback networkCallback) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
-                .build();
-        MealService mealService = retrofit.create(MealService.class);
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(BASE_URL)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+//                .build();
+//        MealService mealService = retrofit.create(MealService.class);
         Observable<CategoriesResponse> call = mealService.getCategories();
         call.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 item->{
@@ -95,6 +96,19 @@ public class MealRemoteDataSourceImpl implements MealRemoteDataSource{
         call.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                 item->{
                     networkCallback.onSuccessCountriesResult(  item.getCountries());
+                },
+                error->  {Log.e(TAG, "Failed to fetch data: " + error.getMessage());
+                    networkCallback.onFailureCategoryResult(error.getMessage());
+                }
+        );
+    }
+
+    @Override
+    public void getIngredients(SearchCallback networkCallback) {
+        Observable<Ingredients> call = mealService.getIngredients();
+        call.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                item->{
+                    networkCallback.onSuccessIngredientsResult(  item.getIngredients());
                 },
                 error->  {Log.e(TAG, "Failed to fetch data: " + error.getMessage());
                     networkCallback.onFailureCategoryResult(error.getMessage());

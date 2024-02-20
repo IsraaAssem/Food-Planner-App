@@ -2,6 +2,7 @@ package com.example.foodplanner.network;
 
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.PlanMeal;
+import com.example.foodplanner.search.presenter.SearchPresenterImpl;
 
 import java.util.List;
 
@@ -27,4 +28,6 @@ public interface MealRepository {
     Completable deleteFromPlan (PlanMeal planMeal);
 
     Flowable<List<Meal>> getFavouriteMeals();
+
+    void getIngredients(SearchCallback networkCallback);
 }

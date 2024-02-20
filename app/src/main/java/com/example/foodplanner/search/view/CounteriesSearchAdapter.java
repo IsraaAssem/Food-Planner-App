@@ -10,10 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.foodplanner.NavGraphDirections;
 import com.example.foodplanner.R;
 import com.example.foodplanner.model.Country;
 
@@ -42,7 +44,7 @@ public class CounteriesSearchAdapter extends RecyclerView.Adapter<CounteriesSear
     @Override
     public CounteriesSearchAdapter.ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater =(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view =inflater.inflate(R.layout.meal_item2,parent,false);
+        View view =inflater.inflate(R.layout.country_item,parent,false);
         CounteriesSearchAdapter.ItemViewHolder itemViewHolder=new CounteriesSearchAdapter.ItemViewHolder(view);
         Log.i(TAG, "onCreateViewHolder: ");
         itemViewHolder.btnAddToFav.setText("View");
@@ -51,19 +53,23 @@ public class CounteriesSearchAdapter extends RecyclerView.Adapter<CounteriesSear
 
     @Override
     public void onBindViewHolder(@NonNull CounteriesSearchAdapter.ItemViewHolder holder, int position) {
-        Country category=(Country) filteredCountries.get(position);
+        Country country=(Country) filteredCountries.get(position);
         Log.i(TAG, "onBindViewHolder: "+position);
-        holder.mealName.setText(category.getStrArea());
-//
-//        holder.btnAddToFav.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
+        holder.mealName.setText(country.getStrArea());
+
+        holder.btnAddToFav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 //                listener.onItemClick(category);
 ////                HomeFragmentDirections.ActionHomeFragmentToMealDetailsFragment action=HomeFragmentDirections.actionHomeFragmentToMealDetailsFragment(category.getIdCountry());
 ////                Navigation.findNavController(v).navigate(action);
-//            }
-//
-//        });
+
+                listener.onCountyClick(country);
+                NavGraphDirections.ActionToHomeFragment action=NavGraphDirections.actionToHomeFragment(country.getStrArea());
+                Navigation.findNavController(v).navigate(action);
+            }
+
+        });
     }
 
     @Override

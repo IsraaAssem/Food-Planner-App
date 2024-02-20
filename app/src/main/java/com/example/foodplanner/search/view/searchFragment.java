@@ -18,6 +18,7 @@ import android.widget.SearchView;
 import com.example.foodplanner.R;
 import com.example.foodplanner.model.Category;
 import com.example.foodplanner.model.Country;
+import com.example.foodplanner.model.Ingredient;
 import com.example.foodplanner.model.MealLocalDataSourceImpl;
 import com.example.foodplanner.network.MealRemoteDataSourceImpl;
 import com.example.foodplanner.network.MealRepositoryImpl;
@@ -34,6 +35,7 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
     private LinearLayoutManager linearLayoutManager;
     CategoriesSearchAdapter categoriesSearchAdapter;
     CounteriesSearchAdapter countriesSearchAdapter;
+    IngredientSearchAdapter ingredientSearchAdapter;
     SearchPresenter searchPresenter;
     Button viewMore;
     ChipGroup chipGroup;
@@ -61,12 +63,14 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
         linearLayoutManager = new LinearLayoutManager(getContext());
         categoriesSearchAdapter = new CategoriesSearchAdapter(getContext(), new ArrayList<>(), this);
         countriesSearchAdapter = new CounteriesSearchAdapter(getContext(), new ArrayList<>(), this);
+        ingredientSearchAdapter = new IngredientSearchAdapter(getContext(), new ArrayList<>(), this);
         recyclerView = view.findViewById(R.id.recyclerViewSearch);
         searchPresenter = new SearchPresenterImpl(this, MealRepositoryImpl.getInstance(MealRemoteDataSourceImpl.getInstance(), MealLocalDataSourceImpl.getInstance(getContext())));
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(categoriesSearchAdapter);
         searchPresenter.getCategories();
         searchPresenter.getCountries();
+        searchPresenter.getIngredients();
         chipGroup = view.findViewById(R.id.chipGroup);
         searchView=view.findViewById(R.id.searchView);
         chipGroup.setSelectionRequired(true);
@@ -91,58 +95,17 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
                     }
                     countriesSearchAdapter.filter(searchView.getQuery().toString());
                 }
+                if (selectedText.equals("Ingredient")) {
+                    recyclerView.setAdapter(ingredientSearchAdapter);
+                    if (ingredientSearchAdapter.ingredients.size() == 0) {
+                        searchPresenter.getIngredients();
+                    }
+                    ingredientSearchAdapter.filter(searchView.getQuery().toString());
+                }
             }
-//            else if (selectedText.equals("Option 2")) {
-//                    selectedRecyclerView = recyclerView2;
-//                } else if (selectedText.equals("Option 3")) {
-//                    selectedRecyclerView = recyclerView3;
-//                }
-//            }
-//        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-//            if (checkedId != View.NO_ID) {
-//                // A chip has been selected
-//                Chip selectedChip = view.findViewById(checkedId);
-//                String selectedText = selectedChip.getText().toString();
-//
-//                // Do something with the selected text
-//                // For example, display it in a TextView
-//                TextView textView = view.findViewById(R.id.textViewResult);
-//                textView.setText("Selected: " + selectedText);
-//            }
+
         });
 
-////////////////////////
-//        ChipGroup chipGroup = view.findViewById(R.id.chipGroup);
-//
-//        chipGroup.setOnCheckedChangeListener((group, checkedId) -> {
-//            RecyclerView selectedRecyclerView = null;
-//
-//            if (checkedId != View.NO_ID) {
-//                Chip selectedChip = group.findViewById(checkedId);
-//                String selectedText = selectedChip.getText().toString();
-//
-//                // Determine which RecyclerView to show based on the selected chip
-//                if (selectedText.equals("Option 1")) {
-//                    selectedRecyclerView = recyclerView1;
-//                } else if (selectedText.equals("Option 2")) {
-//                    selectedRecyclerView = recyclerView2;
-//                } else if (selectedText.equals("Option 3")) {
-//                    selectedRecyclerView = recyclerView3;
-//                }
-//            }
-//
-//            // Update visibility of RecyclerViews
-//            updateRecyclerViewVisibility(recyclerView1, selectedRecyclerView);
-//            updateRecyclerViewVisibility(recyclerView2, selectedRecyclerView);
-//            updateRecyclerViewVisibility(recyclerView3, selectedRecyclerView);
-//        });
-//        private void updateRecyclerViewVisibility(RecyclerView recyclerView, RecyclerView selectedRecyclerView) {
-//            if (recyclerView == selectedRecyclerView) {
-//                recyclerView.setVisibility(View.VISIBLE);
-//            } else {
-//                recyclerView.setVisibility(View.GONE);
-//            }
-//        }
 
     }
     private void setupSearch() {
@@ -162,8 +125,18 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
 
 
     @Override
-    public void onItemClick(Category meal) {
+    public void onCategoryClick(Category meal) {
         searchPresenter.viewMoreDetails(meal);//category
+    }
+
+    @Override
+    public void onCountyClick(Country country) {
+        searchPresenter.viewMoreDetails(country);
+    }
+
+    @Override
+    public void onIngredientClick(Ingredient ingredient) {
+        searchPresenter.viewMoreDetails(ingredient);
     }
 
     @Override
@@ -176,6 +149,12 @@ public class searchFragment extends Fragment implements OnItemClickListener, Sea
 
          countriesSearchAdapter.setList(meals);
         countriesSearchAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public void showIngredients(List<Ingredient> meals) {
+
+         ingredientSearchAdapter.setList(meals);
+        ingredientSearchAdapter.notifyDataSetChanged();
     }
     @Override
     public void showErrMsg(String errMsg) {

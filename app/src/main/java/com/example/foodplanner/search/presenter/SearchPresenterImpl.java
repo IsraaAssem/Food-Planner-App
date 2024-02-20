@@ -2,6 +2,7 @@ package com.example.foodplanner.search.presenter;
 
 import com.example.foodplanner.model.Category;
 import com.example.foodplanner.model.Country;
+import com.example.foodplanner.model.Ingredient;
 import com.example.foodplanner.network.SearchCallback;
 import com.example.foodplanner.network.MealRepository;
 import com.example.foodplanner.search.view.SearchMealView;
@@ -13,6 +14,7 @@ public class SearchPresenterImpl implements SearchPresenter, SearchCallback {
     MealRepository repo;
     private List<Category> categories;
     private List<Country> countries;
+    private List<Ingredient> ingredients;
 
     public SearchPresenterImpl(SearchMealView pView, MealRepository repo) {
         this.pView = pView;
@@ -41,6 +43,28 @@ public class SearchPresenterImpl implements SearchPresenter, SearchCallback {
     }
 
     @Override
+    public void viewMoreDetails(Ingredient ingredient) {
+
+    }
+
+    @Override
+    public void viewMoreDetails(Country country) {
+
+    }
+
+    @Override
+    public void getIngredients() {
+        if (ingredients != null && ingredients.size()>0)
+            onSuccessIngredientResult(ingredients);
+        else repo.getIngredients(this);
+    }
+
+    private void onSuccessIngredientResult(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+        pView.showIngredients(ingredients);
+    }
+
+    @Override
     public void onSuccessCategoryResult(List<Category> categories) {
         this.categories = categories;
         pView.ShowMeals(categories);
@@ -50,9 +74,14 @@ public class SearchPresenterImpl implements SearchPresenter, SearchCallback {
         this.countries = countries;
         pView.showCountries(countries);
     }
-
     @Override
     public void onFailureCategoryResult(String errMsg) {
         pView.showErrMsg(errMsg);
+    }
+
+    @Override
+    public void onSuccessIngredientsResult(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+        pView.showIngredients(ingredients);
     }
 }

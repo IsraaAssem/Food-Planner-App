@@ -7,8 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".authentication.SignInActivity">
-    <!--android:background="@drawable/signin_background">-->
+    tools:context=".authentication.SignInActivity"
+    android:background="@drawable/login_background1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
 

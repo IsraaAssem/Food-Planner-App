@@ -5,4 +5,6 @@ public interface MealRemoteDataSource {
     void makeNetworkCall(String category,NetworkCallback networkCallback);
     void getCategories(SearchCallback networkCallback);
     void getCountries(SearchCallback networkCallback);
+
+    void getIngredients(SearchCallback networkCallback);
 }

@@ -30,9 +30,7 @@
         <activity
             android:name=".authentication.ForgotPasswordActivity"
             android:exported="false" />
-        <activity
-            android:name=".authentication.MainActivity"
-            android:exported="false" />
+
         <activity
             android:name=".authentication.SignInActivity"
             android:exported="false" />

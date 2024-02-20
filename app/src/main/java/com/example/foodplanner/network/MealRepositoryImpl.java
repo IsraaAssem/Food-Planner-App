@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import com.example.foodplanner.model.Category;
 import com.example.foodplanner.model.Country;
+import com.example.foodplanner.model.Ingredient;
 import com.example.foodplanner.model.Meal;
 import com.example.foodplanner.model.MealsLocalDataSource;
 import com.example.foodplanner.model.PlanMeal;
@@ -125,12 +126,17 @@ public class MealRepositoryImpl implements MealRepository {
             }
 
             @Override
-            public void onSuccessCountriesResult(List<Country> categories) {
-
+            public void onSuccessCountriesResult(List<Country> countries) {
+                networkCallback.onSuccessCountriesResult(countries);
             }
             @Override
             public void onFailureCategoryResult(String errMsg) {
                 networkCallback.onFailureCategoryResult(errMsg);
+            }
+
+            @Override
+            public void onSuccessIngredientsResult(List<Ingredient> ingredients) {
+                networkCallback.onSuccessIngredientsResult(ingredients);
             }
 
         });
@@ -152,6 +158,11 @@ public class MealRepositoryImpl implements MealRepository {
             @Override
             public void onFailureCategoryResult(String errMsg) {
                 networkCallback.onFailureCategoryResult(errMsg);
+            }
+
+            @Override
+            public void onSuccessIngredientsResult(List<Ingredient> ingredients) {
+                networkCallback.onSuccessIngredientsResult(ingredients);
             }
 
         });
@@ -209,6 +220,33 @@ public class MealRepositoryImpl implements MealRepository {
     @Override
     public Flowable<List<Meal>> getFavouriteMeals() {
         return mealsLocalDataSource.getFavouriteMeals();
+    }
+
+    @Override
+    public void getIngredients(SearchCallback networkCallback) {
+        mealRemoteDataSource.getIngredients(new SearchCallback() {
+            @Override
+            public void onSuccessCategoryResult(List<Category> categories) {
+                networkCallback.onSuccessCategoryResult(categories);
+            }
+
+            @Override
+            public void onSuccessCountriesResult(List<Country> countries) {
+                networkCallback.onSuccessCountriesResult(countries);
+
+            }
+
+            @Override
+            public void onFailureCategoryResult(String errMsg) {
+                networkCallback.onFailureCategoryResult(errMsg);
+            }
+
+            @Override
+            public void onSuccessIngredientsResult(List<Ingredient> ingredients) {
+                networkCallback.onSuccessIngredientsResult(ingredients);
+            }
+
+        });
     }
 
     @Override
